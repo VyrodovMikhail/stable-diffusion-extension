@@ -7,6 +7,7 @@ import re
 import streamlit as st
 
 
+@st.cache(show_spinner=False)
 def generate_prompts(starting_text):
     model_existence_check = os.path.exists("model/pytorch_model.bin")
     model_dir = "model/"
@@ -42,10 +43,10 @@ def generate_prompts(starting_text):
         return response_list
 
 
+@st.cache(show_spinner=False)
 def generate_images(prompts, prompts_numbers):
     model_id = "CompVis/stable-diffusion-v1-4"
     device = "cuda"
-
     sd_pipe = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16, revision="fp16")
     sd_pipe = sd_pipe.to(device)
     images = []

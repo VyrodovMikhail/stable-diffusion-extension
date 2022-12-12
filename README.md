@@ -18,4 +18,4 @@ or
 
 Then run `pip install -r requirements.txt` in your virtual environment.
 
-Finally, run `streamlit run app.py`.
+Finally, run `streamlit run src/app.py`.
