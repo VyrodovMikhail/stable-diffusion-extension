@@ -16,6 +16,6 @@ or
 
 `git clone git@github.com:VyrodovMikhail/stable-diffusion-extension.git`.
 
-Then run `pip install requirements.txt` in your virtual environment.
+Then run `pip install -r requirements.txt` in your virtual environment.
 
 Finally, run `streamlit run app.py`.

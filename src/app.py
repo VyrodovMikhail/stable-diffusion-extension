@@ -6,8 +6,6 @@ from random import randint
 import re
 import streamlit as st
 
-input_text = "The pink city in the sky under beautiful sun"
-
 
 def generate_prompts(starting_text):
     model_existence_check = os.path.exists("model/pytorch_model.bin")
@@ -57,35 +55,68 @@ def generate_images(prompts, prompts_numbers):
     return images
 
 
+@st.cache()
+def generate_input_text_flag(input_text):
+    if len(input_text) <= 1:
+        return True
+    return False
+
+
+@st.cache(suppress_st_warning=True)
+def show_prompts(input_text):
+    prompts = generate_prompts(input_text)
+    return prompts
+
+
+@st.cache(suppress_st_warning=True)
+def get_images(prompts, prompts_numbers):
+    imgs = generate_images(prompts, prompts_numbers)
+    return imgs
+
+
 if __name__ == '__main__':
-    st.title('Welcome To Project Eagle Vision!')
+    st.title('Welcome To Stable Diffusion extension')
     instructions = """
-        Either upload your own image or select from
-        the sidebar to get a preconfigured image.
-        The image you select or upload will be fed
-        through the Deep Neural Network in real-time
-        and the output will be displayed to the screen.
+        You should upload a small text or even one word that describes
+        images you want to generate. After pressing \"Generate Prompts\" button
+        you receive 4 image descriptions. They can be a little unclear because of
+        they are specifically generated for the Stable Diffusion model.
+        Choose some of them which you like the most. After pressing button \"Generate Images\"
+        you receive images corresponding to your chosen prompts numbers
+        in ascending order!
         """
     st.write(instructions)
     input_text = st.text_input("Your image description")
-    if st.button("Generate prompts"):
-        if len(input_text) < 1:
+    if not "prompts_button" in st.session_state:
+        st.session_state.prompts_button = False
+
+    prompts_button = st.button("Generate prompts")
+    if st.session_state.prompts_button or prompts_button:
+        st.session_state.prompts_button = True
+        flag = generate_input_text_flag(input_text)
+        if flag:
             st.write("Incorrect input format. You should write at least one word. Please, try again.")
         else:
-            with st.spinner("Wait for it..."):
-                prompts = generate_prompts(input_text)
-            st.success("Done!")
+            generated_prompts = show_prompts(input_text)
             st.title("Here are the generated prompts")
-            for i in range(len(prompts)):
-                st.write(str(i + 1) + ". " + prompts[i])
-        st.write("Choose some prompts which you like the most")
-        prompts_numbers = st.multiselect("Choose some prompts you like the most",
-                                         [1, 2, 3, 4], label_visibility="hidden")
-        if st.button("Generate images"):
-            st.title("The generated images")
-            st.write("Here are the generated images based on your prompts")
-            imgs = generate_images(prompts, prompts_numbers)
-            col_list = st.columns(len(prompts_numbers))
-            for i in range(len(col_list)):
-                with col_list[i]:
-                    st.image(imgs[i])
+            for i in range(len(generated_prompts)):
+                st.write(str(i + 1) + ". " + generated_prompts[i])
+
+            if not "prompts_numbers" in st.session_state:
+                st.session_state.prompts_numbers = []
+
+            prompts_numbers = st.multiselect("Choose some prompts you like the most",
+                                             [1, 2, 3, 4], label_visibility="hidden")
+
+            st.session_state.prompts_numbers = prompts_numbers
+
+            images_button = st.button("Generate images")
+
+            if images_button and len(st.session_state.prompts_numbers) > 0:
+                images = get_images(generated_prompts, st.session_state.prompts_numbers)
+                st.title("The generated images")
+                st.write("Here are the generated images based on your prompts")
+                col_list = st.columns(len(st.session_state.prompts_numbers))
+                for i in range(len(col_list)):
+                    with col_list[i]:
+                        st.image(images[i])
