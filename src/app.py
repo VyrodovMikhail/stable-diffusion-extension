@@ -83,7 +83,7 @@ if __name__ == '__main__':
         they are specifically generated for the Stable Diffusion model.
         Choose some of them which you like the most. After pressing button \"Generate Images\"
         you receive images corresponding to your chosen prompts numbers
-        in ascending order!
+        in order which you've picked them.
         """
     st.write(instructions)
     input_text = st.text_input("Your image description")
