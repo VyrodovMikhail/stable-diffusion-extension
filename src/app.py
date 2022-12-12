@@ -114,9 +114,9 @@ if __name__ == '__main__':
             images_button = st.button("Generate images")
 
             if images_button and len(st.session_state.prompts_numbers) > 0:
-                with st.spinner("Generating images...")
+                with st.spinner("Generating images..."):
                     images = get_images(generated_prompts, st.session_state.prompts_numbers)
-                st.success()
+                st.success('Done!')
                 st.title("The generated images")
                 st.write("Here are the generated images based on your prompts")
                 col_list = st.columns(len(st.session_state.prompts_numbers))
