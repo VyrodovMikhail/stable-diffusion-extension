@@ -70,7 +70,6 @@ def show_prompts(input_text):
     return prompts
 
 
-@st.cache()
 def get_images(prompts, prompts_numbers):
     imgs = generate_images(prompts, prompts_numbers)
     return imgs
@@ -115,7 +114,9 @@ if __name__ == '__main__':
             images_button = st.button("Generate images")
 
             if images_button and len(st.session_state.prompts_numbers) > 0:
-                images = get_images(generated_prompts, st.session_state.prompts_numbers)
+                with st.spinner("Generating images...")
+                    images = get_images(generated_prompts, st.session_state.prompts_numbers)
+                st.success()
                 st.title("The generated images")
                 st.write("Here are the generated images based on your prompts")
                 col_list = st.columns(len(st.session_state.prompts_numbers))
