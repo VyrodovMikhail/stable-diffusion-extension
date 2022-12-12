@@ -44,9 +44,12 @@ def generate_prompts(starting_text):
 
 def generate_images(prompts, prompts_numbers):
     model_id = "CompVis/stable-diffusion-v1-4"
-    device = "cuda"
-    sd_pipe = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16, revision="fp16")
-    sd_pipe = sd_pipe.to(device)
+    if torch.cuda.is_available():
+        sd_pipe = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16, revision="fp16")
+        sd_pipe = sd_pipe.to("cuda")
+    else:
+        sd_pipe = StableDiffusionPipeline.from_pretrained(model_id)
+        sd_pipe = sd_pipe.to("cpu")
     images = []
     for number in prompts_numbers:
         image = sd_pipe(prompts[number - 1]).images[0]
@@ -67,6 +70,7 @@ def show_prompts(input_text):
     return prompts
 
 
+@st.cache()
 def get_images(prompts, prompts_numbers):
     imgs = generate_images(prompts, prompts_numbers)
     return imgs
