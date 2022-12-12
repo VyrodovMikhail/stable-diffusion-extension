@@ -7,7 +7,6 @@ import re
 import streamlit as st
 
 
-@st.cache(show_spinner=False)
 def generate_prompts(starting_text):
     model_existence_check = os.path.exists("model/pytorch_model.bin")
     model_dir = "model/"
@@ -43,7 +42,6 @@ def generate_prompts(starting_text):
         return response_list
 
 
-@st.cache(show_spinner=False)
 def generate_images(prompts, prompts_numbers):
     model_id = "CompVis/stable-diffusion-v1-4"
     device = "cuda"
@@ -69,7 +67,6 @@ def show_prompts(input_text):
     return prompts
 
 
-@st.cache(suppress_st_warning=True)
 def get_images(prompts, prompts_numbers):
     imgs = generate_images(prompts, prompts_numbers)
     return imgs
